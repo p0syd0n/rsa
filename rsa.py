@@ -1,31 +1,15 @@
 import random
 from math import gcd
 from math import sqrt
+import numpy as np
+import gmpy2
 
-def text_to_int(text):
-  end_result = ""
-  end_result += "1"
-  for char in text:
-    end_result += str(int_from_char(char))
-  end_result += "1"
-  return int(end_result)
-  
 def char_from_int(number):
   return chr(number + ord('a') - 1)
 
 def int_from_char(char):
   position = ord(char) - ord('a') + 1
   return int(f"{position:02d}")
-  
-def int_to_text(int_to_translate):
-  stringed_int = str(int_to_translate)
-  new_int = stringed_int[1:-1]
-  end_result = ""
-  list_of_ints = [new_int[i:i+2] for i in range(0, len(new_int), 2)]
-  for ints in list_of_ints:
-    new_ints = int(ints)
-    end_result += char_from_int(new_ints)
-  return end_result
     
 def is_prime(number):
   n = number
@@ -46,8 +30,20 @@ def get_phi(p, q):
   return (p-1)*(q-1)
 
 def find_p_and_q():
-    # Implement a function to find prime numbers p and q
-    return 2, 7
+    # Generate random numbers
+    # n = np.random.randint(2, 10000)
+    # e = np.random.randint(2, 10000)
+
+    # # Check if the numbers are prime
+    # while not gmpy2.is_prime(n) or not gmpy2.is_prime(e):
+    #     n = np.random.randint(2, 10000)
+    #     e = np.random.randint(2, 10000)
+
+    # # Calculate p and q
+    # p = n ** (e - 1) % (n - 1)
+    # q = n ** (e - 1) % (n - 1)
+
+    return 19, 23
   
 def find_e(totient):
   number = 1
@@ -83,32 +79,41 @@ def generate_keys():
 def algorithm_encrypt(message, public_key):
   return (message**public_key[0]) % public_key[1]
   
-def algorithm_decrypt(message, private_key):
-  return (message**private_key[0]) % private_key[1]
+def algorithm_decrypt(plaintext, private_key):
+  return (plaintext**private_key[0]) % private_key[1]
 
 def main_encrypt(message, public_key):
   return_string = ''
   for character in message:
     if character == " ":
-      character_int = 27
+      return_string += "& "
+      continue
     else:
       character_int = int_from_char(character)
-      
     encrypted = algorithm_encrypt(character_int, public_key)
-    
-    if character_int <= 9:
-      character_int_string = "0" + str(character_int)
-    else:
-      character_int_string = str(character_int)
-      
-    print(f"character int: {character_int_string}")
     return_string += str(encrypted)
-    print(f"return string is now {return_string}")
-    
+    return_string += " "
   return return_string
-    
+
+def main_decrypt(message, private_key):
+  return_string = ''
+  message_split = message.split(" ")
+  for character in message_split:
+    if character == "&":
+      character_decrypted = " "
+    elif character == "":
+      pass
+    else:
+      character_decrypted = char_from_int(algorithm_decrypt(int(character), private_key))
+    return_string += character_decrypted
+  return return_string[:-1]
+
 public_key = generate_keys()[0]
 private_key = generate_keys()[1]
-message = 'hello'
-print(main_encrypt(message, public_key))
-print("08"+"05")
+
+plaintext = 'hello'
+
+print(f"plaintext is {plaintext}")
+ciphertext = main_encrypt(plaintext, public_key)
+print(f"encrypted plaintext is {ciphertext}")
+print(f"decrypted ciphertext is {main_decrypt(ciphertext, private_key)}")
