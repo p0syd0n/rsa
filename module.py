@@ -73,7 +73,7 @@ def main_encrypt(message, public_key):
   return_string = ''
   for character in message:
     if character == " ":
-      return_string += "& "
+      return_string += ": "
       continue
     else:
       character_int = int_from_char(character)
@@ -86,7 +86,7 @@ def main_decrypt(message, private_key):
   return_string = ''
   message_split = message.split(" ")
   for character in message_split:
-    if character == "&":
+    if character == ":":
       character_decrypted = " "
     elif character == "":
       continue
